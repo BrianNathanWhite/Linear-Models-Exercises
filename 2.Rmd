@@ -9,22 +9,33 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+### Problem 20
 
 ```{r}
 library(data.table)
-mydat <- fread('http://rls.sites.oasis.unc.edu/faculty/rs/source/Data/dmark.dat') #pull in data from website
+mydat <- fread('http://rls.sites.oasis.unc.edu/faculty/rs/source/Data/dmark.dat')
+#pull in data from website
 head(mydat)
 
-colnames(mydat)[] <- c("week", "mark", "pound") #give variables descriptive names
+colnames(mydat)[] <- c("week", "mark", "pound")
+#give variables descriptive names
 colnames(mydat)
 
-attach(mydat) #column names of mydat recognized independently
+attach(mydat)
+#column names of mydat recognized independently
 ```
 
-###(a)
+$\textbf{(a)}$
 
+Note, there is strong visual evidence of autocorrelation in the time series.
 ```{r}
+par(mfrow=c(2, 2))
 plot(mark~week)
 plot(pound~week)
+plot(pound~mark)
+```
+$\textbf{(b)}$
+```{r}
+mp_lm <- lm(pound~mark)
 ```
 
