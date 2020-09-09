@@ -17,4 +17,14 @@ head(mydat)
 
 colnames(mydat)[] <- c("week", "mark", "pound") #give variables descriptive names
 colnames(mydat)
+
+attach(mydat) #column names of mydat recognized independently
 ```
+
+###(a)
+
+```{r}
+plot(mark~week)
+plot(pound~week)
+```
+
