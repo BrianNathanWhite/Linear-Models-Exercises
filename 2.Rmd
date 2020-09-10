@@ -46,9 +46,24 @@ plot(pound~mark)
 abline(mp_lm, col="blue")
 ```
 $\textbf{(c)}$
+
+Inspection of the first 10 autocorrelation coeffecients are computed from the residuals via the acf(.) command. Inspection of these, together with the heuristic $\frac{2}{\sqrt{n}}=\frac{2}{\sqrt{51}}\approx0.28$, suggests that the first 8 autocorrelations are statistically significant. There is clearly evidence that autocorrelation is present. A more precise test, such as the Durbin-Watson could be performed to confirm this heuristic argument.
 ```{r}
-mp_lm$residuals #the residuals of the linear model in question
-acf(pound, lag.max=30)
+mp_residuals <- mp_lm$residuals #the residuals of the linear model in question
+mp_ac <- acf(mp_residuals, lag.max=10) #the first 10 serial correlations are computed with approximate 95% error bounds if the true time series is independent.
+mp_ac
+
+heuristic<-2/sqrt(51) #the heursitic used to determine statistical significance of the autocorrelations
+which(abs(mp_ac$acf)>heuristic) #the indices of the autocorrelations that are statistically significant.
+
+#Code to compute the Durbin Watson test statistic
+dw_num <- rep(0,50)
+for(i in 2:51){
+  dw_num[i] <- (mp_residuals[i]-mp_residuals[i-1])^2
+}
+
+D=sum(dw_num)/sum(mp_residuals^2)
+D
 ```
 $\textbf{(d)}$
 ```{r}
