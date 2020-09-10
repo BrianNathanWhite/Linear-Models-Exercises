@@ -35,7 +35,14 @@ plot(pound~week)
 plot(pound~mark)
 ```
 $\textbf{(b)}$
+
+Assume the individaul weekly observaions are independent. The linear regression equation $\hat y_{i}=\hat\beta_{0}+\hat\beta_{1}x_{i}$ is computed via the code below. A point estimate for $\hat\beta_{1}$ is approximately $-2.9$ with a 90% confidence interval of $[-5.12, -0.69]$.
 ```{r}
 mp_lm <- lm(pound~mark)
+summary(mp_lm)
+confint(mp_lm, level=0.90)
+
+plot(pound~mark)
+abline(mp_lm, col="blue")
 ```
 
