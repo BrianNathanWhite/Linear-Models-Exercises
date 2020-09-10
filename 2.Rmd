@@ -13,15 +13,15 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 library(data.table)
-mydat <- fread('http://rls.sites.oasis.unc.edu/faculty/rs/source/Data/dmark.dat')
+dmark <- fread('http://rls.sites.oasis.unc.edu/faculty/rs/source/Data/dmark.dat')
 #pull in data from website
-head(mydat)
+head(dmark)
 
-colnames(mydat)[] <- c("week", "mark", "pound")
+colnames(dmark)[] <- c("week", "mark", "pound")
 #give variables descriptive names
-colnames(mydat)
+colnames(dmark)
 
-attach(mydat)
+attach(dmark)
 #column names of mydat recognized independently
 ```
 
@@ -49,5 +49,24 @@ $\textbf{(c)}$
 ```{r}
 mp_lm$residuals #the residuals of the linear model in question
 acf(pound, lag.max=30)
+```
+$\textbf{(d)}$
+```{r}
+
+```
+
+### Problem 21
+
+```{r}
+marathon <- fread('http://rls.sites.oasis.unc.edu/faculty/rs/source/Data/marathon.dat')
+#pull in data from website
+head(marathon)
+
+colnames(marathon)[] <- c("length", "count")
+#give variables descriptive names
+colnames(marathon)
+
+attach(marathon)
+#column names of mydat recognized independently
 ```
 
