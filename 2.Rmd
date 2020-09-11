@@ -50,11 +50,15 @@ $\textbf{(c)}$
 Inspection of the first 10 autocorrelation coeffecients are computed from the residuals via the acf(.) command. Inspection of these, together with the heuristic $\frac{2}{\sqrt{n}}=\frac{2}{\sqrt{51}}\approx0.28$, suggests that the first 8 autocorrelations are statistically significant. There is clearly evidence that autocorrelation is present. A more precise test, such as the Durbin-Watson could be performed to confirm this heuristic argument.
 ```{r}
 mp_residuals <- mp_lm$residuals #the residuals of the linear model in question
-mp_ac <- acf(mp_residuals, lag.max=10) #the first 10 serial correlations are computed with approximate 95% error bounds if the true time series is independent.
+mp_ac <- acf(mp_residuals, lag.max=10) #the first 10 serial correlations are computed
+#with approximate 95% error bounds if the true time series is independent.
 mp_ac
 
-heuristic<-2/sqrt(51) #the heursitic used to determine statistical significance of the autocorrelations
-which(abs(mp_ac$acf)>heuristic) #the indices of the autocorrelations that are statistically significant.
+#the heursitic used to determine statistical significance of the autocorrelations
+heuristic<-2/sqrt(51) 
+#the indices of the autocorrelations that are statistically significant.
+which(abs(mp_ac$acf)>heuristic)
+
 
 #Code to compute the Durbin Watson test statistic
 dw_num <- rep(0,50)
@@ -66,7 +70,7 @@ D=sum(dw_num)/sum(mp_residuals^2)
 D
 ```
 $\textbf{(d)}$
-As autocorrelation is present, the standard deviation of the least squared estimates must be corrected. In particular, the corrected standard deviation of $\hat\beta_{0}$ is computed below for K=8. Note, this corrected value is about 3.77, in contrast to the original value of 1.32.
+As autocorrelation is present, the standard deviation of the least squared estimates must be corrected. In particular, the corrected standard deviation of $\hat\beta_{0}$ is computed below for K=8. Note, this corrected value is about 3.77, in contrast to the original value of 1.32. With this new value, observe that the test statistic for the previously considerd hypotheses is $t=-\frac{2.195}{3.77}\approx-0.771$. The p-value associated with this test statistic, with respect to a $t_{n-2}$ distribution, is greater than the 0.1 threshold. Thus, in contrast to the previous conclusion, the evidence does not support the rejection of $H_{0}$. In otherwords, there is not statistically significant evidence to suggest that $\beta_{0}\neq{0}$.
 ```{r}
 summary(mp_lm)
 se_slope=1.323
@@ -84,7 +88,8 @@ k_denom <- vector()
     k_denom[i] <- (mark[i]-mean(mark))^2
   }
 
-#compute the r_x(k) values for k=1,...,8. e.g. k1 is a vector containing the terms of the sum in the numerator of the ratio that defines r_x(k)
+#compute the r_x(k) values for k=1,...,8. e.g. k1 is a vector
+#containing the terms of the sum in the numerator of the ratio that defines r_x(k)
  k1 <-vector()
  for(i in 1:50){
      k1[i] <- (mark[i]-mean(mark))*(mark[i+1]-mean(mark))
@@ -138,21 +143,27 @@ rx8 <-sum(k8)/sum(k_denom)
 #create vector where kth entry is kth sample autocorrelation of the {mark_i} process.
 a <- c(rx1, rx2, rx3, rx4, rx5, rx6, rx7, rx8)
 
-#create vector of terms in sum in the second term of the scaling factor for the corrected variance of slope estimate
+#create vector of terms in sum in the second term of 
+#the scaling factor for the corrected variance of slope estimate
 b <- vector()
 for(i in 1:8){
   b[i] <- (mp_ac$acf[i])*(a[i])
 }
 
-#the slope estimate standard deviation corrected for the presence of autocorrelation in the residuals.
+#the slope estimate standard deviation corrected for 
+#the presence of autocorrelation in the residuals.
 beta1_se_corrected <- sqrt(((beta1_se)^2)*(1+2*sum(b)))
 
 beta1_se_corrected
 beta1_se
+
+t=(mp_lm$coefficients[2])/beta1_se_corrected
+t
+qt(.05, 49)
+2*pt(t, 49)
 ```
 
 ### Problem 21
-
 ```{r}
 marathon <- fread('http://rls.sites.oasis.unc.edu/faculty/rs/source/Data/marathon.dat')
 #pull in data from website
