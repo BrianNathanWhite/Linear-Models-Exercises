@@ -142,7 +142,7 @@ colnames(marathon)
 
 #column names of mydat recognized independently
 ```
-Next, approximate inverse regression is performed. Note, a zero in the lenght column corresponds to a missing value. I will use inverse regression to predict these unknown length values from the corresponding known count value. Further, I will produce standard errors for these estimates and a 95% confidence interval for the total length of the unknown length entries. The predicted values, along with their corresponding y values and standard errors, are compiled in the data frame named 'results_df'. This data frame is output below.
+Next, approximate inverse regression is performed. Note, a zero in the length column corresponds to a missing value. I will use inverse regression to predict these unknown length values from the corresponding known count value. Further, I will produce standard errors for these estimates. The predicted values, along with their corresponding y values and standard errors, are compiled in the data frame named 'results_df'. This data frame is output below.
 ```{r message=FALSE}
 #remove rows with unkown x values from data
 marathon_known <- marathon[-c(which(marathon$length==0)),] 
@@ -194,10 +194,11 @@ se_x
 results_df <- data.frame(new_x=new_x, y=marathon$count[which(marathon$length==0)], se_new_x=se_x)
 results_df
 ```
-
+Next, I compute, via both approximate and exact methods, a 95% confidence interval for the total length of the predicted x values (i.e. the total length of the measurements which did not have a steel tape measurement).
 ```{r}
-list_test <- list(c(1, 2, 3), c("a", "b"), c(2, 4, 5))
-list_test[1]
-list_test[[3]][2]
+
+```
+```{r}
+
 ```
 
