@@ -2,7 +2,10 @@
 title: "STOR 664 HW 2"
 author: "Brian N. White"
 date: "9/9/2020"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -49,9 +52,11 @@ $\textbf{(c)}$
 
 Inspection of the first 10 autocorrelation coeffecients are computed from the residuals via the acf(.) command. Inspection of these, together with the heuristic $\frac{2}{\sqrt{n}}=\frac{2}{\sqrt{51}}\approx0.28$, suggests that the first 8 autocorrelations are statistically significant. There is clearly evidence that autocorrelation is present. A more precise test, such as the Durbin-Watson could be performed to confirm this heuristic argument.
 ```{r}
-mp_residuals <- mp_lm$residuals #the residuals of the linear model in question
-mp_ac <- acf(mp_residuals, lag.max=10) #the first 10 serial correlations are computed
-#with approximate 95% error bounds if the true time series is independent.
+#the residuals of the linear model in question
+mp_residuals <- mp_lm$residuals 
+#the first 10 serial correlations are computed with
+#approximate 95% error bounds if the true time series is independent.
+mp_ac <- acf(mp_residuals, lag.max=10) 
 mp_ac
 
 #the heursitic used to determine statistical significance of the autocorrelations
@@ -179,11 +184,7 @@ colnames(marathon)
 ```
 
 Next, approximate inverse regression is performed. Note, a zero in the lenght column corresponds to a missing value. I will use inverse regression to predict these unknown length values from the corresponding known count value. Further, I will produce standard errors for these estimates and a 95% confidence interval for the total length of the unknown length entries.
-```{r}
-#return indices of the unknown x values
-which(marathon$length==0)  
-length(which(length==0))
-
+```{r message=FALSE}
 #remove rows with unkown x values from data
 marathon_known <- marathon[-c(which(marathon$length==0)),] 
 
@@ -197,13 +198,17 @@ lm_marathon <- lm(count~length)
 new_y <- marathon$count[which(marathon$length==0)]
 new_x <- vector()
 
-#compute inverse regression estimates of the unknown length values using the corresponding known y values
+#compute inverse regression estimates of 
+#the unknown length values using the corresponding known y values
 for(i in 1:13){
   new_x[i] <- mean(length)+(new_y[i]-lm_marathon$coefficients[1])/lm_marathon$coefficients[2]
 }
 
+#the predicted x values
 new_x 
+```
 
+```{r}
 #compute the prediction standard errors of the length estimates
 summary(lm_marathon)
 resid_se=7.652
@@ -223,6 +228,7 @@ for(i in 1:13){
   se_x[i] <- (resid_se/lm_marathon$coefficients[2])*sqrt((1/12)+(((new_x[i]-mean(length))^2)/d)+1)
 }
 
+#standard errors of the predicted x values
 se_x
 ```
 
