@@ -181,11 +181,11 @@ colnames(marathon)
 Next, approximate inverse regression is performed. Note, a zero in the lenght column corresponds to a missing value. I will use inverse regression to predict these unknown length values from the corresponding known count value. Further, I will produce standard errors for these estimates and a 95% confidence interval for the total length of the unknown length entries.
 ```{r}
 #return indices of the unknown x values
-which(length==0)  
+which(marathon$length==0)  
 length(which(length==0))
 
 #remove rows with unkown x values from data
-marathon_known <- marathon[-c(which(length==0)),] 
+marathon_known <- marathon[-c(which(marathon$length==0)),] 
 
 #make variable names usable without reference to data set
 attach(marathon_known)
@@ -194,8 +194,8 @@ attach(marathon_known)
 lm_marathon <- lm(count~length)
 
 #create data vectors for new unknown x and known y values
+new_y <- marathon$count[which(marathon$length==0)]
 new_x <- vector()
-new_y <- marathon[which(length==0),2]
 
 #compute inverse regression estimates of the unknown length values using the corresponding known y values
 for(i in 1:13){
@@ -203,6 +203,27 @@ for(i in 1:13){
 }
 
 new_x 
+
+#compute the prediction standard errors of the length estimates
+summary(lm_marathon)
+resid_se=7.652
+
+
+#compute the sum of the squared known centered length values
+length_c <- vector()
+for(i in 1:12){
+  length_c[i] <- length[i]-mean(length)
+}
+
+d=sum(length_c^2)
+
+#compute the standard errors of the new length estimates
+se_x <- vector()
+for(i in 1:13){
+  se_x[i] <- (resid_se/lm_marathon$coefficients[2])*sqrt((1/12)+(((new_x[i]-mean(length))^2)/d)+1)
+}
+
+se_x
 ```
 
 
