@@ -70,7 +70,7 @@ D=sum(dw_num)/sum(mp_residuals^2)
 D
 ```
 $\textbf{(d)}$
-As autocorrelation is present, the standard deviation of the least squared estimates must be corrected. In particular, the corrected standard deviation of $\hat\beta_{0}$ is computed below for K=8. Note, this corrected value is about 3.77, in contrast to the original value of 1.32. With this new value, observe that the test statistic for the previously considerd hypotheses is $t=-\frac{2.195}{3.77}\approx-0.771$. The p-value associated with this test statistic, with respect to a $t_{n-2}$ distribution, is greater than the 0.1 threshold. Thus, in contrast to the previous conclusion, the evidence does not support the rejection of $H_{0}$. In otherwords, there is not statistically significant evidence to suggest that $\beta_{0}\neq{0}$.
+As autocorrelation is present, the standard deviation of the least squared estimates must be corrected. In particular, the corrected standard deviation of $\hat\beta_{1}$ is computed below for K=8. Note, this corrected value is about 3.77, in contrast to the original value of 1.32. With this new value, observe that the test statistic for the previously considerd hypotheses is $t=-\frac{2.195}{3.77}\approx-0.771$. The p-value associated with this test statistic, with respect to a $t_{n-2}$ distribution, is greater than the 0.1 threshold. Thus, in contrast to the previous conclusion, the evidence does not support the rejection of $H_{0}$. In otherwords, there is not statistically significant evidence to suggest that $\beta_{1}\neq{0}$.
 ```{r}
 summary(mp_lm)
 se_slope=1.323
