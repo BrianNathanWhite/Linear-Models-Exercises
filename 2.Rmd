@@ -164,7 +164,9 @@ qt(.05, 49)
 ```
 
 ### Problem 21
-```{r}
+
+First, the data set is imported and the columns given descriptive names.
+```{r import data set}
 marathon <- fread('http://rls.sites.oasis.unc.edu/faculty/rs/source/Data/marathon.dat')
 #pull in data from website
 head(marathon)
@@ -173,7 +175,34 @@ colnames(marathon)[] <- c("length", "count")
 #give variables descriptive names
 colnames(marathon)
 
-attach(marathon)
 #column names of mydat recognized independently
 ```
+
+Next, approximate inverse regression is performed. Note, a zero in the lenght column corresponds to a missing value. I will use inverse regression to predict these unknown length values from the corresponding known count value. Further, I will produce standard errors for these estimates and a 95% confidence interval for the total length of the unknown length entries.
+```{r}
+#return indices of the unknown x values
+which(length==0)  
+length(which(length==0))
+
+#remove rows with unkown x values from data
+marathon_known <- marathon[-c(which(length==0)),] 
+
+#make variable names usable without reference to data set
+attach(marathon_known)
+
+#perform linear regression on the known data
+lm_marathon <- lm(count~length)
+
+#create data vectors for new unknown x and known y values
+new_x <- vector()
+new_y <- marathon[which(length==0),2]
+
+#compute inverse regression estimates of the unknown length values using the corresponding known y values
+for(i in 1:13){
+  new_x[i] <- mean(length)+(new_y[i]-lm_marathon$coefficients[1])/lm_marathon$coefficients[2]
+}
+
+new_x 
+```
+
 
