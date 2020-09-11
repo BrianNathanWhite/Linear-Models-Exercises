@@ -66,8 +66,89 @@ D=sum(dw_num)/sum(mp_residuals^2)
 D
 ```
 $\textbf{(d)}$
+As autocorrelation is present, the standard deviation of the least squared estimates must be corrected. In particular, the corrected standard deviation of $\hat\beta_{0}$ is computed below for K=8. Note, this corrected value is about 3.77, in contrast to the original value of 1.32.
 ```{r}
+summary(mp_lm)
+se_slope=1.323
 
+#confirm uncorrected standard error of slope estimate
+rse <- sum((mp_lm$residuals)^2)/49
+beta1_se=sqrt(rse/sum((mark-mean(mark))^2))
+beta1_se
+
+#compute corrected standard deviation of slope estimate
+
+#the denominator of r_x(k) for all k=1,..,8
+k_denom <- vector()
+  for(i in 1:51){
+    k_denom[i] <- (mark[i]-mean(mark))^2
+  }
+
+#compute the r_x(k) values for k=1,...,8. e.g. k1 is a vector containing the terms of the sum in the numerator of the ratio that defines r_x(k)
+ k1 <-vector()
+ for(i in 1:50){
+     k1[i] <- (mark[i]-mean(mark))*(mark[i+1]-mean(mark))
+ }
+ 
+k2 <-vector()
+ for(i in 1:49){
+     k2[i] <- (mark[i]-mean(mark))*(mark[i+2]-mean(mark))
+ }
+
+k3 <-vector()
+ for(i in 1:48){
+     k3[i] <- (mark[i]-mean(mark))*(mark[i+3]-mean(mark))
+ }
+ 
+k4 <-vector()
+ for(i in 1:47){
+     k4[i] <- (mark[i]-mean(mark))*(mark[i+4]-mean(mark))
+ }
+ 
+k5 <-vector()
+ for(i in 1:46){
+     k5[i] <- (mark[i]-mean(mark))*(mark[i+5]-mean(mark))
+ }
+
+k6 <-vector()
+ for(i in 1:45){
+     k6[i] <- (mark[i]-mean(mark))*(mark[i+6]-mean(mark))
+ }
+
+k7 <-vector()
+ for(i in 1:44){
+     k7[i] <- (mark[i]-mean(mark))*(mark[i+7]-mean(mark))
+ }
+
+k8 <-vector()
+ for(i in 1:43){
+     k8[i] <- (mark[i]-mean(mark))*(mark[i+8]-mean(mark))
+ }
+
+#sum over the terms to compute r_x(k) for k=1,..,8
+rx1 <-sum(k1)/sum(k_denom)
+rx2 <-sum(k2)/sum(k_denom)
+rx3 <-sum(k3)/sum(k_denom)
+rx4 <-sum(k4)/sum(k_denom)
+rx5 <-sum(k5)/sum(k_denom)
+rx6 <-sum(k6)/sum(k_denom)
+rx7 <-sum(k7)/sum(k_denom)
+rx8 <-sum(k8)/sum(k_denom)
+
+#create vector where kth entry is kth sample autocorrelation of the {mark_i} process.
+a <- c(rx1, rx2, rx3, rx4, rx5, rx6, rx7, rx8)
+
+#create vector of terms in sum in the second term of the scaling factor for the corrected variance of slope estimate
+b <- vector()
+for(i in 1:8){
+  b[i] <- (mp_ac$acf[i])*(a[i])
+}
+
+#the slope estimate standard deviation corrected for the presence of autocorrelation in the residuals.
+beta1_se_corrected <- sqrt(((beta1_se)^2)*(1+2*sum(b)))
+
+beta1_se_corrected
+beta1_se
 ```
 
 ### Problem 21
