@@ -93,7 +93,8 @@ rxk_terms <-list(vector(), vector(), vector(), vector(), vector(), vector(), vec
 #the lag
 K=8
 
-#this for loop generates the vectors that are stored in rxk_terms. Each one contains the terms of the sum in
+#this for loop generates the vectors that are stored in rxk_terms.
+#Each one contains the terms of the sum in
 #the numerator of the ratio that defines r_x(k)
 for(i in 1:K){
   for(j in 1:(51-i)){
@@ -104,7 +105,8 @@ for(i in 1:K){
 #dummy vector to be used in the for loop below
 a <- vector()
 
-#this for loop fills the dummy vector a with the r_x(k) values where k=1,...,8; where the k'th entry corresponds to r_x(k).
+#this for loop fills the dummy vector a with the r_x(k) 
+#values where k=1,...,8; where the k'th entry corresponds to r_x(k).
 for(i in 1:K){
   a[i] <-as.numeric(lapply(rxk_terms, sum)[i])/sum(k_denom)
 }
@@ -139,13 +141,14 @@ head(marathon)
 colnames(marathon)[] <- c("length", "count")
 #give variables descriptive names
 colnames(marathon)
-
-#column names of mydat recognized independently
 ```
 Next, approximate inverse regression is performed. Note, a zero in the length column corresponds to a missing value. I will use inverse regression to predict these unknown length values from the corresponding known count value. Further, I will produce standard errors for these estimates. The predicted values, along with their corresponding y values and standard errors, are compiled in the data frame named 'results_df'. This data frame is output below.
 ```{r message=FALSE}
 #remove rows with unkown x values from data
 marathon_known <- marathon[-c(which(marathon$length==0)),] 
+
+#a scatterplot of the data in question
+plot(marathon_known$count~marathon_known$length)
 
 #make variable names usable without reference to data set
 attach(marathon_known)
@@ -194,11 +197,45 @@ se_x
 results_df <- data.frame(new_x=new_x, y=marathon$count[which(marathon$length==0)], se_new_x=se_x)
 results_df
 ```
-Next, I compute, via both approximate and exact methods, a 95% confidence interval for the total length of the predicted x values (i.e. the total length of the measurements which did not have a steel tape measurement).
-```{r}
+Next, I compute, via both approximate and exact methods, a 95% prediction interval for the total length of the predicted x values (i.e. the total length of the measurements which did not have a steel tape measurement). I will do so with the assumption that there is an independent error with variance $\sigma^{2}$ for each section. Further, I contend that the sum of the errors over the 13 unmeasured sections should have variance $13\sigma^{2}$. The formulae to be used to compute the 95% prediction interval can be found on page 80, for the approximate method, and page 85, for the exact method, of Smith and Young. To find the approximate prediction interval see the output of my_approx_conf below. For the exact prediction interval see the handwritten notes. Note, that the traditional addition of 0.1% to the length of the road course is reasonable in light of the approxaminate prediction interval.
+```{r approximate method}
+x_bar <- sum(new_x)
 
+#lower bound of prediction interval
+conf_approx_up <- x_bar + pt(12, .975)*(13*resid_se/lm_marathon$coefficients[2])*sqrt(1/12 
+                                         + ((x_bar-mean(marathon_known$length))^2/d) + 1)
+#upper bound of prediction interval
+conf_approx_low <- x_bar - pt(12, .975)*(13*resid_se/lm_marathon$coefficients[2])*sqrt(1/12 
+                                        + ((x_bar-mean(marathon_known$length))^2/d) + 1)
+
+my_approx_conf <- data.frame(lower=conf_approx_low, x_bar=x_bar, upper=conf_approx_up)
+my_approx_conf
+
+#a 0.1% correction to the length of road course
+x_bar*1.001
 ```
+A last task, I will re-compute the predicted x values and their corresponding standard errors under the assupmtion that the true slope is 0 (i.e. this is reasonble considering the scatterplot of the data). Note, that the change in the values is negligable as the assumption that the slope is 0 is well founded (i.e. the least squared estimate for the slope was near 0 to begin with).
 ```{r}
+#slope 0 (s0)
+new_x_s0 <- vector()
 
+#compute inverse regression estimates of 
+#the unknown length values using the corresponding known y values where beta0 is assumed to be 0.
+for(i in 1:13){
+  new_x_s0[i] <- mean(length)+(new_y[i]/lm_marathon$coefficients[2])
+}
+
+new_x_s0
+
+#compute the standard errors of the new length estimates
+se_x_s0 <- vector()
+for(i in 1:13){
+  se_x_s0[i] <- 
+    (resid_se/lm_marathon$coefficients[2])*sqrt((1/12)+(((new_x_s0[i]-mean(length))^2)/d)+1)
+}
+
+
+results_df_s0 <- 
+  data.frame(new_x=new_x_s0, y=marathon$count[which(marathon$length==0)], se_new_x_s0=se_x_s0)
+results_df_s0
 ```
-
